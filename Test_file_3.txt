@@ -1,1 +1,1 @@
-I'm test file 3 and I was commited but now I'm not
+Hello, this is test file 3 and I'm commited and pushed in a new branch!
