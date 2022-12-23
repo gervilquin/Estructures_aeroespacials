@@ -1,1 +1,1 @@
-I'm file 2 and I'm not yet commited
+I'm file 2 and was commited but now I'm not.

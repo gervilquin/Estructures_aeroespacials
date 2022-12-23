@@ -1,1 +1,1 @@
-I'm test file 3 and I'm not yet commited
+I'm test file 3 and I was commited but now I'm not
