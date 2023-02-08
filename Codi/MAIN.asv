@@ -26,7 +26,7 @@ c = 70e-3; % m
 L = 0.5; % m
 H1 = 0.90; % m
 H2 = 1.70; % m
-alpha = deg2rad(12); % rad (12บ)
+alpha = deg2rad(12); % rad (12ยบ)
 rw = 0.48; % m
 I0 = 330;%163*sqrt(2); % kg m2
 dt = 0.95; %1.5/2; % s
@@ -143,11 +143,12 @@ Td = connectDOFs(n_el,n_nod,n_i,Tnod);
 
 % Compute stiffness matrix and force matrix in global coordinates
 %[KG] = assemblyKF(n_el,n_nod,n_i,nnod,Kel,Td);
-
-Kparams.Kel = Kel; Kparams.Tnod = Tnod; Kparams.nnodes = nnod; Kparams.nDOFnode = n_i;
-k = GlobalStiffnessMatrixComputer(Kparams);
+Kparams.Kel = Kel;
+Kparams.Td = Td;
+Kparams.nnod = nnod;
+Kparams.n_i
+k = GlobalStiffnessMatrixComputer(Kel,Td,nnod,n_i);
 KG = k.compute();
-
 
 % Applying boundary conditions
 [vL,vR,uR] = applyCond(n_i,nnod,fixNod);

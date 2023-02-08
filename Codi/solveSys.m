@@ -10,7 +10,12 @@ K_RR=KG(vR,vR);
 F_L=Fext(vL);
 F_R=Fext(vR);
 
-uL=K_LL\(F_L-K_LR*uR);
+
+%uL=K_LL\(F_L-K_LR*uR);
+SParam.LHS = K_LL; SParam.RHS = (F_L-K_LR*uR); SParam.switcher = 1;
+%s = IterativeSolver(SParam);
+s = DirectSolver(SParam);
+uL = s.solve();
 RR=K_RR*uR+K_RL*uL-F_R;
 
 u(vL,1)=uL;
