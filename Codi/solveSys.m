@@ -12,9 +12,9 @@ F_R=Fext(vR);
 
 
 %uL=K_LL\(F_L-K_LR*uR);
-SParam.LHS = K_LL; SParam.RHS = (F_L-K_LR*uR); SParam.switcher = 1;
-%s = IterativeSolver(SParam);
-s = DirectSolver(SParam);
+SParam.LHS = K_LL; SParam.RHS = (F_L-K_LR*uR);
+SParam.type = 'Iterative';
+s = Solver.create(SParam);
 uL = s.solve();
 RR=K_RR*uR+K_RL*uL-F_R;
 

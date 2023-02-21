@@ -139,13 +139,24 @@ Td = connectDOFs(n_el,n_nod,n_i,Tnod);
 [Kel] = computeKel(n_el,n_i,n_nod,Rot,l_e,mat,Tmat);
 
 % Compute force vector
-[Fext] = computeF(n_i,n_dof,Fdata);
+[Fext] = computeF(n_i,nnod,Fdata);
 
 % Compute stiffness matrix and force matrix in global coordinates
 %[KG] = assemblyKF(n_el,n_nod,n_i,nnod,Kel,Td);
-
 Kparams.Kel = Kel; Kparams.Tnod = Tnod; Kparams.nnodes = nnod; Kparams.nDOFnode = n_i;
 k = GlobalStiffnessMatrixComputer(Kparams);
+
+load('TestData');
+
+
+t = TestGlobalStiffnessMatrix(t1Data);
+t.test();
+t = TestGlobalForceVector(t2Data);
+t.test();
+t = TestIterativeSolver(t3Data);
+t.test();
+t = TestDirectSolver(t4Data);
+t.test();
 KG = k.compute();
 
 

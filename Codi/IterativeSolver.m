@@ -1,13 +1,14 @@
 classdef IterativeSolver < Solver
 
-    methods
-        function obj = IterativeSolver(Inputs)
-            obj = obj@Solver(Inputs);
+    methods (Access = public)
+        function obj = IterativeSolver(cParams)
+            obj = obj.init(cParams);
         end
+    end
 
+    methods (Access = public)
         function Result = solve(obj)
             Result = pcg(obj.LHS,obj.RHS);
         end
-
     end
 end

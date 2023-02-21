@@ -17,7 +17,6 @@ classdef GlobalStiffnessMatrixComputer
         end
 
         function K = compute(obj)
-
             nDOFs = obj.nnodes*obj.nDOFnode;
             nel = size(obj.Kel,3);
             K = sparse(nDOFs,nDOFs);

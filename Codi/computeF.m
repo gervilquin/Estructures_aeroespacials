@@ -1,5 +1,5 @@
-function Fext = computeF(n_i,n_dof,Fdata)
-
+function Fext = computeF(n_i,n_nodes,Fdata)
+n_dof = n_nodes*n_i;
 Fext=zeros(n_dof,1);
 [rownum , ~]=size(Fdata);
 
