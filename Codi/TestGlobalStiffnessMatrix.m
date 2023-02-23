@@ -1,18 +1,10 @@
-classdef TestGlobalStiffnessMatrix < handle
-    properties
-        testIn
-        testOut
-        tol
-    end
-
+classdef TestGlobalStiffnessMatrix < test
     methods (Access = public)
         function obj = TestGlobalStiffnessMatrix(cParams)
-            obj.testIn = cParams.testIn;
-            obj.testOut = cParams.testOut;
-            obj.tol = cParams.tol;
+            obj = obj@test(cParams);
         end
 
-        function test(obj)
+        function run(obj)
             k = GlobalStiffnessMatrixComputer(obj.testIn);
             testRes = k.compute(); 
             PrintResults(obj,testRes);

@@ -7,12 +7,8 @@ classdef Tester < handle
         function obj = Tester(test_vector)
             obj.test_vector = test_vector;
         end
-
-        function run(obj)
-            for i=1:length(obj.test_vector)
-                obj.test_vector{i}.run();
-            end
-        end
     end
+
+    methods
 
 end

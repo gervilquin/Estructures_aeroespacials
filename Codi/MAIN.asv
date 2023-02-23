@@ -26,7 +26,7 @@ c = 70e-3; % m
 L = 0.5; % m
 H1 = 0.90; % m
 H2 = 1.70; % m
-alpha = deg2rad(12); % rad (12บ)
+alpha = deg2rad(12); % rad (12ยบ)
 rw = 0.48; % m
 I0 = 330;%163*sqrt(2); % kg m2
 dt = 0.95; %1.5/2; % s
@@ -127,13 +127,13 @@ nnodes = size(x,1); %Total number of nodes
 %% SOLVER
     
 % Obtain connectivity table of degrees of freedom
-Td = connectDOFs(nel,2,nDOFnode,Tnod);
+Td = connectDOFs(nel,n_nod,nDOFnode,Tnod);
 
 % Compute rotation matrix and elements' length
-[l_e,Rot] = computeR(nel,2,2,nDOFnode,Tnod,x);
+[l_e,Rot] = computeR(nel,n_d,n_nod,nDOFnode,Tnod,x);
 
 % Compute stifness matrix
-[Kel] = computeKel(nel,nDOFnode,2,Rot,l_e,mat,Tmat);
+[Kel] = computeKel(nel,nDOFnode,n_nod,Rot,l_e,mat,Tmat);
 
 % Compute force vector
 %[Fext] = computeF(n_i,nnod,Fdata);
@@ -148,12 +148,15 @@ k = GlobalStiffnessMatrixComputer(Kparams);
 load('TestData');
 
 % TESTING SECTION
-test_vector{1} = TestGlobalStiffnessMatrix(t1Data);
-test_vector{2} = TestForceVector(t2Data);
-test_vector{3} = TestIterativeSolver(t3Data);
-test_vector{4} = TestDirectSolver(t4Data);
-t = Tester(test_vector);
-t.run();
+test test
+t = TestGlobalStiffnessMatrix(t1Data);
+t.test();
+t = TestForceVector(t2Data);
+t.test();
+t = TestIterativeSolver(t3Data);
+t.test();
+t = TestDirectSolver(t4Data);
+t.test();
 
 KG = k.compute();
 Fext = f.compute();

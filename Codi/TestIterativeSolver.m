@@ -1,18 +1,10 @@
-classdef TestIterativeSolver < handle
-    properties
-        testIn
-        testOut
-        tol
-    end
-
+classdef TestIterativeSolver < test
     methods (Access = public)
         function obj = TestIterativeSolver(cParams)
-            obj.testIn = cParams.testIn;
-            obj.testOut = cParams.testOut;
-            obj.tol = cParams.tol;
+            obj = obj@test(cParams);
         end
 
-        function test(obj)
+        function run(obj)
             s = Solver.create(obj.testIn);
             testRes = s.solve();
             PrintResults(obj,testRes);

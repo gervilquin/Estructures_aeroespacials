@@ -1,18 +1,10 @@
-classdef TestForceVector < handle
-    properties
-        testIn
-        testOut
-        tol
-    end
-
+classdef TestForceVector < test
     methods (Access = public)
         function obj = TestForceVector(cParams)
-            obj.testIn = cParams.testIn;
-            obj.testOut = cParams.testOut;
-            obj.tol = cParams.tol;
+            obj = obj@test(cParams);
         end
 
-        function test(obj)
+        function run(obj)
             f = ForceVectorComputer(obj.testIn);
             testRes = f.compute();
             PrintResults(obj,testRes);

@@ -1,5 +1,5 @@
 classdef test < handle
-    properties (Access = private)
+    properties (Access = protected)
         testIn
         testOut
         tol
