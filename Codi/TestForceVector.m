@@ -1,4 +1,4 @@
-classdef TestGlobalForceVector < handle
+classdef TestForceVector < handle
     properties
         testIn
         testOut
@@ -6,17 +6,15 @@ classdef TestGlobalForceVector < handle
     end
 
     methods (Access = public)
-        function obj = TestGlobalForceVector(cParams)
+        function obj = TestForceVector(cParams)
             obj.testIn = cParams.testIn;
             obj.testOut = cParams.testOut;
             obj.tol = cParams.tol;
         end
 
         function test(obj)
-            n_i = obj.testIn.nDOFnode;
-            n_nodes = obj.testIn.nnodes;
-            Fdata = obj.testIn.Fdata;
-            testRes = computeF(n_i,n_nodes,Fdata);
+            f = ForceVectorComputer(obj.testIn);
+            testRes = f.compute();
             PrintResults(obj,testRes);
         end
     end

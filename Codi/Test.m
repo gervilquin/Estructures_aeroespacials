@@ -1,22 +1,19 @@
-classdef Test < handle
-    methods (Access = public, Static)
-        function obj = create(cParams)
-            switch cParams.type 
-                case 'Complete'
-                    obj = CompleteTest(cParams);
-                case 'Fast'
-                    obj = FastTest(cParams);
-            end
+classdef test < handle
+    properties (Access = private)
+        testIn
+        testOut
+        tol
+    end
+
+    methods 
+        function obj = test(cParams)
+            obj.testIn = cParams.testIn;
+            obj.testOut = cParams.testOut;
+            obj.tol = cParams.tol;
         end
     end
 
     methods (Access = public, Abstract)
-           test()
-    end
-
-    methods (Access = protected)
-        function init(obj,cParams)
-            obj.tData = cParams.tData;
-        end
+           run()
     end
 end

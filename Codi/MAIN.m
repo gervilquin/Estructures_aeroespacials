@@ -119,61 +119,61 @@ Tmat = [
 ];
 
 
-n_el = size(Tnod,1); %Number of elements
-n_nod = size(Tnod,2); %Nodes per element
-n_i = 3; %Node dimensions
-n_d = 2; %Problem dimensions
-nnod = size(x,1); %Total number of nodes
-n_dof = nnod*n_i; %Total number of DOF
+nel = size(Tnod,1); %Number of elements
+nDOFnode = 3; %Node dimensions
+nnodes = size(x,1); %Total number of nodes
 
 
 %% SOLVER
     
 % Obtain connectivity table of degrees of freedom
-Td = connectDOFs(n_el,n_nod,n_i,Tnod);
+Td = connectDOFs(nel,n_nod,nDOFnode,Tnod);
 
 % Compute rotation matrix and elements' length
-[l_e,Rot] = computeR(n_el,n_d,n_nod,n_i,Tnod,x);
+[l_e,Rot] = computeR(nel,n_d,n_nod,nDOFnode,Tnod,x);
 
 % Compute stifness matrix
-[Kel] = computeKel(n_el,n_i,n_nod,Rot,l_e,mat,Tmat);
+[Kel] = computeKel(nel,nDOFnode,n_nod,Rot,l_e,mat,Tmat);
 
 % Compute force vector
-[Fext] = computeF(n_i,nnod,Fdata);
+%[Fext] = computeF(n_i,nnod,Fdata);
+Fparams.Fdata = Fdata; Fparams.nnodes = nnodes; Fparams.nDOFnode = nDOFnode;
+f = ForceVectorComputer(Fparams);
 
 % Compute stiffness matrix and force matrix in global coordinates
 %[KG] = assemblyKF(n_el,n_nod,n_i,nnod,Kel,Td);
-Kparams.Kel = Kel; Kparams.Tnod = Tnod; Kparams.nnodes = nnod; Kparams.nDOFnode = n_i;
+Kparams.Kel = Kel; Kparams.Tnod = Tnod; Kparams.nnodes = nnodes; Kparams.nDOFnode = nDOFnode;
 k = GlobalStiffnessMatrixComputer(Kparams);
 
 load('TestData');
 
-
+% TESTING SECTION
 t = TestGlobalStiffnessMatrix(t1Data);
 t.test();
-t = TestGlobalForceVector(t2Data);
+t = TestForceVector(t2Data);
 t.test();
 t = TestIterativeSolver(t3Data);
 t.test();
 t = TestDirectSolver(t4Data);
 t.test();
-KG = k.compute();
 
+KG = k.compute();
+Fext = f.compute();
 
 % Applying boundary conditions
-[vL,vR,uR] = applyCond(n_i,nnod,fixNod);
+[vL,vR,uR] = applyCond(nDOFnode,nnodes,fixNod);
 
 % Solve equations' system
 [u,R] = solveSys(vL,vR,uR,KG,Fext);
 
 % Compute internal forces and momentums
-[Fx_el,Fy_el,Mz_el] = internalFM(n_el,n_nod,n_i,u,Kel,Rot,Td);
+[Fx_el,Fy_el,Mz_el] = internalFM(nel,n_nod,nDOFnode,u,Kel,Rot,Td);
 
 
 %% POSTPROCESS
 
 % Plot of the deformed structure
-plotBeam2D(x,Tnod,u,20);
+%plotBeam2D(x,Tnod,u,20);
 
 % Plot of the internal forces distribution
-plotBeamIntForces(x,Tnod,Fx_el,Fy_el,Mz_el);
+%plotBeamIntForces(x,Tnod,Fx_el,Fy_el,Mz_el);
