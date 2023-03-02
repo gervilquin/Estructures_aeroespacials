@@ -1,0 +1,49 @@
+clc,clear
+load('testData');
+save('testData_old','testData')
+testData.t6.d1.testIn.Tnod = [1 2];
+testData.t6.d1.testIn.coords = [0 0; cos(pi/3) sin(pi/3)];
+testData.t6.d1.testIn.mat = [1];
+testData.t6.d1.testIn.Tmat = [3 5 7];
+testData.t6.d1.testIn.nnodes = 3;
+testData.t6.d1.testIn.nDOFnode = 3;
+Rot(:,:,1) = [cos(pi/3) sin(pi/3) 0 0 0 0;
+              -sin(pi/3) cos(pi/3) 0 0 0 0;
+              0 0 1 0 0 0;
+              0 0 0 cos(pi/3) sin(pi/3) 0
+              0 0 0 -sin(pi/3) cos(pi/3) 0
+              0 0 0 0 0 1];
+Rot(:,:,2) = [cos(pi/6) -sin(pi/6) 0 0 0 0;
+              sin(pi/6) cos(pi/6) 0 0 0 0;
+              0 0 1 0 0 0;
+              0 0 0 cos(pi/6) -sin(pi/6) 0
+              0 0 0 sin(pi/6) cos(pi/6) 0
+              0 0 0 0 0 1];
+testData.t6.d1.testIn.Rot = Rot;
+Kel(:,:,1) = Rot(:,:,1)'*((3*5)*[  1    0   0   -1    0     0;
+                         0    0   0    0    0     0;
+                         0    0   0    0    0     0;
+                        -1    0   0    1    0     0;
+                         0    0   0    0    0     0;
+                         0    0   0    0    0     0] + ... 
+                (3*7)*[   0    0      0    0    0       0   ;
+                        0    12    6   0   -12     6  ;
+                        0   6  4  0   -6   2 ;
+                        0    0      0    0    0       0   ;
+                        0   -12   -6   0    12    -6  ;
+                        0   6 2 0   -6   4 ])*Rot(:,:,1);
+Kel(:,:,2) = Rot(:,:,2)'*((2*4)*[  1    0   0   -1    0     0;
+                         0    0   0    0    0     0;
+                         0    0   0    0    0     0;
+                        -1    0   0    1    0     0;
+                         0    0   0    0    0     0;
+                         0    0   0    0    0     0] + ...
+                (3*7)*[   0    0      0    0    0       0   ;
+                        0    12    6   0   -12     6  ;
+                        0   6  4  0   -6 2 ;
+                        0    0      0    0    0       0   ;
+                        0   -12   -6   0    12    -6  ;
+                        0   6  2  0   -6  4 ])*Rot(:,:,2); 
+testData.t6.d1.testOut = Kel;
+testData.t6.d1.tol = 10e-5;
+save('testData','testData')

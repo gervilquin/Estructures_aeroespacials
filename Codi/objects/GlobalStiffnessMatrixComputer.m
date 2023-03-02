@@ -7,7 +7,7 @@ classdef GlobalStiffnessMatrixComputer
     end
 
     methods
-        function obj = GlobalStiffnessMatrixComputer(cParams) % Class parameters
+        function obj = GlobalStiffnessMatrixComputer(cParams) % Constructor parameters
 
             obj.Kel = cParams.Kel;
             obj.Tnod = cParams.Tnod;
