@@ -7,9 +7,9 @@ classdef Solver < handle
     methods (Access = public, Static)
         function obj = create(cParams)
             switch cParams.type
-                case 'Iterative'
+                case type.Iterative
                     obj = IterativeSolver(cParams);
-                case 'Direct'
+                case type.Direct
                     obj = DirectSolver(cParams);
             end
         end

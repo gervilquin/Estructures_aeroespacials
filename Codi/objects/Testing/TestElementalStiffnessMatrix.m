@@ -5,9 +5,8 @@ classdef TestElementalStiffnessMatrix < test
         end
 
         function run(obj)
-            %kel = ElementalStiffnessMatrixComputer(obj.testIn);
-            %testRes = kel.compute();
-            testRes = 0;
+            kel = ElementalStiffnessMatrixComputer(obj.testIn);
+            testRes = kel.compute();
             PrintResults(obj,testRes);
         end
     end

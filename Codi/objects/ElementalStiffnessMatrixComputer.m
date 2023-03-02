@@ -1,5 +1,5 @@
 classdef ElementalStiffnessMatrixComputer
-    properties %(Access = private)
+    properties (Access = private)
         coords
         Tnod
         Tmat

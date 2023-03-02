@@ -168,10 +168,17 @@ KG = k.compute();
 Fext = f.compute();
 
 % Applying boundary conditions
-[vL,vR,uR] = applyCond(nDOFnode,nnodes,fixNod);
+%[vL,vR,uR] = applyCond(nDOFnode,nnodes,fixNod);
+BCparams.nDOFnode = nDOFnode; BCparams.nnodes = nnodes; BCparams.fixNodes = fixNod;
+d = DirichletBoundaries(BCparams);
+BC = d.apply();
 
 % Solve equations' system
-[u,R] = solveSys(vL,vR,uR,KG,Fext);
+%[u,R] = solveSys(vL,vR,uR,KG,Fext);
+SolParams.K = KG; SolParams.F = Fext; SolParams.BC = BC; SolParams.nDOFnode = nDOFnode; SolParams.nnodes = nnodes;
+SolParams.type = type.Iterative;
+s = SystemSolver(SolParams);
+Results = s.solve();
 
 % Compute internal forces and momentums
 %[Fx_el,Fy_el,Mz_el] = internalFM(nel,n_nod,nDOFnode,u,Kel,Rot,Td);
@@ -180,6 +187,7 @@ Fext = f.compute();
 %% POSTPROCESS
 
 % Plot of the deformed structure
+u = Results.u;
 plotBeam2D(x,Tnod,u,20);
 
 % Plot of the internal forces distribution
