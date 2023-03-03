@@ -22,7 +22,8 @@ classdef SystemSolver
             nDOF = obj.nDOFnode*obj.nnodes;
             Res.R = zeros(nDOF,1); Res.u = zeros(nDOF,1);
 
-            K_LL=obj.K(obj.BC.vL,obj.BC.vL);
+            vL = obj.BC.vL;
+            K_LL=obj.K(vL,vL);
             K_LR=obj.K(obj.BC.vL,obj.BC.vR);
             K_RL=obj.K(obj.BC.vR,obj.BC.vL);
             K_RR=obj.K(obj.BC.vR,obj.BC.vR);

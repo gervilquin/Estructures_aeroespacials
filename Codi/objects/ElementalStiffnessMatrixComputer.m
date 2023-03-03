@@ -26,8 +26,8 @@ classdef ElementalStiffnessMatrixComputer
             nDOFel = nnodel*obj.nDOFnode;
             Kel = zeros(nDOFel,nDOFel,nel);
             for i=1:nel
-                K1 = AxialStiffnessMatrixComputer(obj,i);
-                K2 = ShearBendingStiffnessMatrixComputer(obj,i);
+                K1  = AxialStiffnessMatrixComputer(obj,i);
+                K2 = obj.computeShearBendingStiffnesMatrix(i);
                 K = K1 + K2;
                 Kel(:,:,i)=transpose(obj.Rot(:,:,i))*K*obj.Rot(:,:,i);
             end
@@ -36,7 +36,10 @@ classdef ElementalStiffnessMatrixComputer
 
     methods (Access = private)
         function [l_x,l_y,l] = ComputeLengthElement(obj,el) % This method is repeated in different classes. Duplicate code!
-            l_x = obj.coords(obj.Tnod(el,2),1) - obj.coords(obj.Tnod(el,1),1);
+            
+            nodeA = obj.Tnod(el,2);
+            coordA = obj.coords(nodeA,1); 
+            l_x = coordA - obj.coords(obj.Tnod(el,1),1);
             l_y = obj.coords(obj.Tnod(el,2),2) - obj.coords(obj.Tnod(el,1),2);
             l = sqrt(l_x^2 + l_y^2);
         end
@@ -52,7 +55,7 @@ classdef ElementalStiffnessMatrixComputer
                          0    0   0    0    0     0]; 
         end
 
-        function K = ShearBendingStiffnessMatrixComputer(obj,el)
+        function K = computeShearBendingStiffnesMatrix(obj,el)
           [~,~,l] = ComputeLengthElement(obj,el);
           Kcoef = ((obj.mat(obj.Tmat(el,1),1)*(obj.mat(obj.Tmat(el,1),3)))/l^3);
           K = Kcoef*[   0    0      0    0    0       0   ;

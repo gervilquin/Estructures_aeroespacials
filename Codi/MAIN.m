@@ -4,6 +4,16 @@
 % Date: 06/05/2020
 % Author/s: Gerard Villalta
 %
+%TODO
+%struct
+% not entering obj
+% tests in other script out of main
+% function should just do 1 thing
+%Intial data in a class... design class to maximize cohesion
+% class herencia de handle
+% main a class
+% UML
+%Task 5 i 6
 
 clear;
 close all;
@@ -139,8 +149,14 @@ Rot = r.compute();
 
 % Compute stifness matrix
 %[Kel] = computeKel(nel,nDOFnode,2,Rot,l_e,mat,Tmat);
-Kelparams.Tnod = Tnod; Kelparams.coords = x; Kelparams.mat = mat; Kelparams.Tmat = Tmat; Kelparams.Rot = Rot; Kelparams.nnodes = nnodes; Kelparams.nDOFnode = nDOFnode;
-k = ElementalStiffnessMatrixComputer(Kelparams);
+s.Tnod = Tnod;
+s.coords = x;
+s.mat = mat;
+s.Tmat     = Tmat;
+s.Rot      = Rot; 
+s.nnodes   = nnodes; 
+s.nDOFnode = nDOFnode;
+k = ElementalStiffnessMatrixComputer(s);
 Kel = k.compute();
 
 % Compute force vector
@@ -169,7 +185,9 @@ Fext = f.compute();
 
 % Applying boundary conditions
 %[vL,vR,uR] = applyCond(nDOFnode,nnodes,fixNod);
-BCparams.nDOFnode = nDOFnode; BCparams.nnodes = nnodes; BCparams.fixNodes = fixNod;
+BCparams.nDOFnode = nDOFnode; 
+BCparams.nnodes = nnodes; 
+BCparams.fixNodes = fixNod;
 d = DirichletBoundaries(BCparams);
 BC = d.apply();
 
