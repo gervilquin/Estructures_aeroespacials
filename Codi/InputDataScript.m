@@ -1,26 +1,4 @@
-%-------------------------------------------------------------------------%
-% EVALUATION PROBLEM
-%-------------------------------------------------------------------------%
-% Date: 06/05/2020
-% Author/s: Gerard Villalta
-%
-%TODO
-%struct
-% not entering obj
-% tests in other script out of main
-% function should just do 1 thing
-%Intial data in a class... design class to maximize cohesion
-% class herencia de handle
-% main a class
-% UML
-%Task 5 i 6
-
-clear;
-close all;
-addpath(genpath('original_functions/'));
-addpath(genpath('objects/'));
-
-%% INPUT DATA
+%% INPUT DATA GENERATOR
 
 % Material properties
 E = 150e9; % Pa
@@ -65,7 +43,7 @@ F = mu*N;
 
 % Nodal coordinates
 %  x(a,j) = coordinate of node a in the dimension j
-coord = [
+Input.coord = [
     0,         0; % Node 1
     L,        H2; % Node 2
     0,        H2; % Node 3
@@ -76,7 +54,7 @@ coord = [
 
 % Nodal connectivities  
 %  Tnod(e,a) = global nodal number associated to node a of element e
-Tnod = [
+Input.Tnod = [
     1, 4; % Element 1-4
     4, 5; % Element 4-5
     5, 3; % Element 5-3
@@ -90,7 +68,7 @@ Tnod = [
 %  fixNod(k,1) = node at which some DOF is prescribed
 %  fixNod(k,2) = DOF prescribed
 %  fixNod(k,3) = prescribed displacement in the corresponding DOF (0 for fixed)
-fixNod = [% Node        DOF  Magnitude
+Input.fixNod = [% Node        DOF  Magnitude
              2           1    0;
              2           2    0;
              2           3    0;
@@ -103,7 +81,7 @@ fixNod = [% Node        DOF  Magnitude
 %  Fdata(k,1) = node at which the force is applied
 %  Fdata(k,2) = DOF (direction) at which the force is applied
 %  Fdata(k,3) = force magnitude in the corresponding DOF
-Fdata = [%   Node              DOF            Magnitude
+Input.Fdata = [%   Node              DOF            Magnitude
              1                  1         N*sin(alpha)-F*cos(alpha);
              1                  2         N*cos(alpha)+F*sin(alpha);
 
@@ -113,7 +91,7 @@ Fdata = [%   Node              DOF            Magnitude
 %  mat(m,1) = Young modulus of material m
 %  mat(m,2) = Section area of material m
 %  mat(m,3) = Section inertia of material m
-mat = [% Young M.        Section A.    Inertia 
+Input.mat = [% Young M.        Section A.    Inertia 
                E,               AA,        IzA;  % Material 1
                E,               AB,        IzB;  % Material 2
                E,               AC,        IzC;  % Material 3
@@ -121,7 +99,7 @@ mat = [% Young M.        Section A.    Inertia
 
 % Material connectivities
 %  Tmat(e) = Row in mat corresponding to the material associated to element e 
-Tmat = [
+Input.Tmat = [
     1; % Element 1-4 / Material 1 (A)
     1; % Element 4-5 / Material 1 (A)
     1; % Element 5-3 / Material 1 (A)
@@ -130,82 +108,6 @@ Tmat = [
     3; % Element 6-5 / Material 3 (C)
 ];
 
-nnodes = size(x,1);
-nDOFnode = 3; %Node dimensions
-nel = size
-
-%% SOLVER
-    
-% Obtain connectivity table of degrees of freedom
-%Td = connectDOFs(nel,2,nDOFnode,Tnod);
-
-% Compute rotation matrix and elements' length
-%[l_e,Rot] = computeR(nel,2,2,nDOFnode,Tnod,x);
-Rparams.Tnod     = Tnod; 
-Rparams.coords   = x; 
-Rparams.nnodes   = nnodes; 
-Rparams.nDOFnode = nDOFnode;
-r = RotationMatrixComputer(Rparams);
-Rot = r.compute();
-
-% Compute stifness matrix
-%[Kel] = computeKel(nel,nDOFnode,2,Rot,l_e,mat,Tmat);
-s.Tnod     = Tnod;
-s.coords   = x;
-s.mat      = mat;
-s.Tmat     = Tmat;
-s.Rot      = Rot; 
-s.nnodes   = nnodes; 
-s.nDOFnode = nDOFnode;
-k = ElementalStiffnessMatrixComputer(s);
-Kel = k.compute();
-
-% Compute force vector
-%[Fext] = computeF(n_i,nnod,Fdata);
-Fparams.Fdata    = Fdata; 
-Fparams.nnodes   = nnodes; 
-Fparams.nDOFnode = nDOFnode;
-f = ForceVectorComputer(Fparams);
-
-% Compute stiffness matrix and force matrix in global coordinates
-%[KG] = assemblyKF(n_el,n_nod,n_i,nnod,Kel,Td);
-Kparams.Kel      = Kel; 
-Kparams.Tnod     = Tnod; 
-Kparams.nnodes   = nnodes; 
-Kparams.nDOFnode = nDOFnode;
-k = GlobalStiffnessMatrixComputer(Kparams);
-
-KG = k.compute();
-Fext = f.compute();
-
-% Applying boundary conditions
-%[vL,vR,uR] = applyCond(nDOFnode,nnodes,fixNod);
-BCparams.nDOFnode = nDOFnode; 
-BCparams.nnodes   = nnodes; 
-BCparams.fixNodes = fixNod;
-d = DirichletBoundaries(BCparams);
-BC = d.apply();
-
-% Solve equations' system
-%[u,R] = solveSys(vL,vR,uR,KG,Fext);
-SolParams.K        = KG; 
-SolParams.F        = Fext; 
-SolParams.BC       = BC; 
-SolParams.nDOFnode = nDOFnode; 
-SolParams.nnodes   = nnodes;
-SolParams.type     = type.Iterative;
-s = SystemSolver(SolParams);
-Results = s.solve();
-
-% Compute internal forces and momentums
-%[Fx_el,Fy_el,Mz_el] = internalFM(nel,n_nod,nDOFnode,u,Kel,Rot,Td);
-
-
-%% POSTPROCESS
-
-% Plot of the deformed structure
-u = Results.u;
-%plotBeam2D(x,Tnod,u,20);
-
-% Plot of the internal forces distribution
-%plotBeamIntForces(x,Tnod,Fx_el,Fy_el,Mz_el);
+Input.nDOFnode = 3; %Node dimensions
+Input.type = type.Direct;
+save('Input','Input');

@@ -130,11 +130,9 @@ Tmat = [
     3; % Element 6-5 / Material 3 (C)
 ];
 
-
-nel = size(Tnod,1); %Number of elements
+nnodes = size(x,1);
 nDOFnode = 3; %Node dimensions
-nnodes = size(x,1); %Total number of nodes
-
+nel = size(Tnod,1);
 
 %% SOLVER
     
@@ -143,15 +141,18 @@ nnodes = size(x,1); %Total number of nodes
 
 % Compute rotation matrix and elements' length
 %[l_e,Rot] = computeR(nel,2,2,nDOFnode,Tnod,x);
-Rparams.Tnod = Tnod; Rparams.coords = x; Rparams.nnodes = nnodes; Rparams.nDOFnode = nDOFnode;
+Rparams.Tnod     = Tnod; 
+Rparams.coords   = x; 
+Rparams.nnodes   = nnodes; 
+Rparams.nDOFnode = nDOFnode;
 r = RotationMatrixComputer(Rparams);
 Rot = r.compute();
 
 % Compute stifness matrix
 %[Kel] = computeKel(nel,nDOFnode,2,Rot,l_e,mat,Tmat);
-s.Tnod = Tnod;
-s.coords = x;
-s.mat = mat;
+s.Tnod     = Tnod;
+s.coords   = x;
+s.mat      = mat;
 s.Tmat     = Tmat;
 s.Rot      = Rot; 
 s.nnodes   = nnodes; 
@@ -161,24 +162,18 @@ Kel = k.compute();
 
 % Compute force vector
 %[Fext] = computeF(n_i,nnod,Fdata);
-Fparams.Fdata = Fdata; Fparams.nnodes = nnodes; Fparams.nDOFnode = nDOFnode;
+Fparams.Fdata    = Fdata; 
+Fparams.nnodes   = nnodes; 
+Fparams.nDOFnode = nDOFnode;
 f = ForceVectorComputer(Fparams);
 
 % Compute stiffness matrix and force matrix in global coordinates
 %[KG] = assemblyKF(n_el,n_nod,n_i,nnod,Kel,Td);
-Kparams.Kel = Kel; Kparams.Tnod = Tnod; Kparams.nnodes = nnodes; Kparams.nDOFnode = nDOFnode;
+Kparams.Kel      = Kel; 
+Kparams.Tnod     = Tnod; 
+Kparams.nnodes   = nnodes; 
+Kparams.nDOFnode = nDOFnode;
 k = GlobalStiffnessMatrixComputer(Kparams);
-
-% TESTING SECTION
-load('TestData');
-test_vector{1} = TestGlobalStiffnessMatrix(testData.t1.d1);
-test_vector{2} = TestForceVector(testData.t2.d1);
-test_vector{3} = TestIterativeSolver(testData.t3.d1);
-test_vector{4} = TestDirectSolver(testData.t4.d1);
-test_vector{5} = TestRotationMatrix(testData.t5.d1);
-test_vector{6} = TestElementalStiffnessMatrix(testData.t6.d1); 
-t = Tester(test_vector);
-t.run();
 
 KG = k.compute();
 Fext = f.compute();
@@ -186,15 +181,19 @@ Fext = f.compute();
 % Applying boundary conditions
 %[vL,vR,uR] = applyCond(nDOFnode,nnodes,fixNod);
 BCparams.nDOFnode = nDOFnode; 
-BCparams.nnodes = nnodes; 
+BCparams.nnodes   = nnodes; 
 BCparams.fixNodes = fixNod;
 d = DirichletBoundaries(BCparams);
 BC = d.apply();
 
 % Solve equations' system
 %[u,R] = solveSys(vL,vR,uR,KG,Fext);
-SolParams.K = KG; SolParams.F = Fext; SolParams.BC = BC; SolParams.nDOFnode = nDOFnode; SolParams.nnodes = nnodes;
-SolParams.type = type.Iterative;
+SolParams.K        = KG; 
+SolParams.F        = Fext; 
+SolParams.BC       = BC; 
+SolParams.nDOFnode = nDOFnode; 
+SolParams.nnodes   = nnodes;
+SolParams.type     = type.Iterative;
 s = SystemSolver(SolParams);
 Results = s.solve();
 

@@ -1,4 +1,4 @@
-classdef ForceVectorComputer
+classdef ForceVectorComputer < handle
     properties (Access = private)
         Fdata
         nnodes
@@ -7,9 +7,7 @@ classdef ForceVectorComputer
 
     methods
         function obj = ForceVectorComputer(cParams)
-            obj.Fdata = cParams.Fdata;
-            obj.nnodes = cParams.nnodes;
-            obj.nDOFnode = cParams.nDOFnode;
+            obj = obj.init(cParams);
         end
 
         function F = compute(obj)
@@ -17,8 +15,21 @@ classdef ForceVectorComputer
             F=zeros(nDOFs,1);
             [rownum , ~]=size(obj.Fdata);
             for i=1:rownum
-                F(obj.nDOFnode*(obj.Fdata(i,1)-1) + obj.Fdata(i,2),1)= obj.Fdata(i,3);
+                node    = obj.Fdata(i,1);
+                nodeDOF = obj.Fdata(i,2);
+                fval    = obj.Fdata(i,3);
+                fDOF = obj.nDOFnode*(node-1) + nodeDOF;
+         
+                F(fDOF,1)= fval;
             end
+        end
+    end
+
+    methods (Access = private)
+        function obj = init(obj,cParams)
+            obj.Fdata = cParams.Fdata;
+            obj.nnodes = cParams.nnodes;
+            obj.nDOFnode = cParams.nDOFnode;
         end
     end
 end

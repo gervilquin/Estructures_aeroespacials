@@ -1,4 +1,4 @@
-classdef SystemSolver
+classdef SystemSolver < handle
     properties (Access = private)
         BC
         K
@@ -10,6 +10,18 @@ classdef SystemSolver
 
     methods
         function obj = SystemSolver(cParams)
+            obj = obj.init(cParams);
+        end
+
+        function Res = solve(obj)
+            Matrices = obj.SplitSystem();
+            Res.u = obj.computeDisplacements(Matrices);
+            Res.R = obj.computeReactions(Matrices,Res.u);
+        end
+    end
+
+    methods (Access = private)
+        function obj = init(obj,cParams)
             obj.BC = cParams.BC;
             obj.K = cParams.K;
             obj.F = cParams.F;
@@ -18,27 +30,39 @@ classdef SystemSolver
             obj.type = cParams.type;
         end
 
-        function Res = solve(obj)
-            nDOF = obj.nDOFnode*obj.nnodes;
-            Res.R = zeros(nDOF,1); Res.u = zeros(nDOF,1);
-
+        function Matrices = SplitSystem(obj)
             vL = obj.BC.vL;
-            K_LL=obj.K(vL,vL);
-            K_LR=obj.K(obj.BC.vL,obj.BC.vR);
-            K_RL=obj.K(obj.BC.vR,obj.BC.vL);
-            K_RR=obj.K(obj.BC.vR,obj.BC.vR);
-            F_L=obj.F(obj.BC.vL);
-            F_R=obj.F(obj.BC.vR);
-            
-            SParam.LHS = K_LL; SParam.RHS = (F_L-K_LR*obj.BC.uR);
+            vR = obj.BC.vR;
+            Matrices.KLL=obj.K(vL,vL);
+            Matrices.KLR=obj.K(vL,vR);
+            Matrices.KRL=obj.K(vR,vL);
+            Matrices.KRR=obj.K(vR,vR);
+            Matrices.FL=obj.F(vL);
+            Matrices.FR=obj.F(vR);
+        end
+
+        function u = computeDisplacements(obj,Matrices)
+            nDOF = obj.nDOFnode*obj.nnodes;
+            u = zeros(nDOF,1);
+            uR = obj.BC.uR;
+            vL = obj.BC.vL;
+            vR = obj.BC.vR;
+            SParam.LHS = Matrices.KLL; 
+            SParam.RHS = (Matrices.FL - Matrices.KLR*uR);
             SParam.type = obj.type;
             s = Solver.create(SParam);
             uL = s.solve();
+            u(vL,1)=uL;
+            u(vR,1)=uR;
+        end
 
-            RR=K_RR*obj.BC.uR+K_RL*uL-F_R;
-            Res.u(obj.BC.vL,1)=uL;
-            Res.u(obj.BC.vR,1)=obj.BC.uR;
-            Res.R(obj.BC.vR,1)=RR;
+        function R = computeReactions(obj,Matrices,u)
+            nDOF = obj.nDOFnode*obj.nnodes;
+            R = zeros(nDOF,1);      
+            vL = obj.BC.vL;
+            vR = obj.BC.vR;
+            RR= Matrices.KRR*u(vR,1) + Matrices.KRL*u(vL,1) - Matrices.FR;
+            R(vR,1)=RR;
         end
     end
 end
